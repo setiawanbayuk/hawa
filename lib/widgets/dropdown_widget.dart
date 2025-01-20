@@ -45,14 +45,26 @@ class _DropdownWidgetState extends State<DropdownWidget> {
       decoration: InputDecoration(
         filled: true,
         fillColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(vertical: 15),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide.none,
+        ),
+        prefixIcon: Icon(
+          Icons.more_horiz,
+          color: Theme.of(context).colorScheme.primary,
         ),
       ),
-      hint: Text(
-        widget.judul,
-        style: TextStyle(fontSize: 14),
+      hint: Text.rich(
+        TextSpan(
+          text: widget.judul,
+          children: [
+            TextSpan(
+              text: ' *',
+              style: const TextStyle(color: Colors.red),
+            ),
+          ],
+        ),
       ),
       items: widget.dropDownItems.map((MyDropDownItems myDropDownItems) {
         return DropdownMenuItem(
