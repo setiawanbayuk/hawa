@@ -49,6 +49,18 @@ class _EsuketSktmFormScreenState extends State<EsuketSktmFormScreen> {
     MyDropDownItems(text: "PEREMPUAN", value: "2"),
   ];
 
+  final hubunganItems = [
+    MyDropDownItems(text: "Putranya", value: "Putranya"),
+    MyDropDownItems(text: "Putrinya", value: "Putrinya"),
+    MyDropDownItems(text: "Cucunya", value: "Cucunya"),
+    MyDropDownItems(text: "Keluarga", value: "Keluarga"),
+  ];
+
+  final kategoriItems = [
+    MyDropDownItems(text: "DTKS", value: "DTKS"),
+    MyDropDownItems(text: "Non DTKS", value: "Non DTKS"),
+  ];
+
   Future handleFileUpload() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
@@ -299,12 +311,13 @@ class _EsuketSktmFormScreenState extends State<EsuketSktmFormScreen> {
                                             },
                                             judul: "Jenis Kelamin",
                                           ),
-                                          TextFormFieldWidget(
-                                            attributeCtrl: kepadaHubunganCtrl,
-                                            labelText: 'Hubungan Keluarga',
-                                            iconData: Icons.more_horiz,
-                                            isRequired:
-                                                registerAsCtrl == 'sekolah',
+                                          DropdownWidget(
+                                            dropDownItems: hubunganItems,
+                                            inputController: kepadaHubunganCtrl,
+                                            onChanged: (value) {
+                                              print(value);
+                                            },
+                                            judul: "Hubungan Keluarga",
                                           ),
                                           TextFormFieldWidget(
                                             attributeCtrl: kepadaSekolahCtrl,
@@ -321,12 +334,13 @@ class _EsuketSktmFormScreenState extends State<EsuketSktmFormScreen> {
                                             isRequired:
                                                 registerAsCtrl == 'sekolah',
                                           ),
-                                          TextFormFieldWidget(
-                                            attributeCtrl: kategoriCtrl,
-                                            labelText: 'Kategori DTKS',
-                                            iconData: Icons.more_horiz,
-                                            isRequired:
-                                                registerAsCtrl == 'sekolah',
+                                          DropdownWidget(
+                                            dropDownItems: kategoriItems,
+                                            inputController: kategoriCtrl,
+                                            onChanged: (value) {
+                                              print(value);
+                                            },
+                                            judul: "Kategori DTSKS",
                                           ),
                                           const SizedBox(height: 75),
                                         ],
