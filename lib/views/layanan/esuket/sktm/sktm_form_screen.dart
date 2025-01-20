@@ -1,0 +1,543 @@
+// ignore_for_file: avoid_print, use_build_context_synchronously
+
+import 'dart:io';
+
+import 'package:dio/dio.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:pecut/controllers/esuket_controller.dart';
+import 'package:pecut/widgets/form_upload_widget.dart';
+import 'package:pecut/widgets/text_form_field_widget.dart';
+import 'package:provider/provider.dart';
+import 'package:toggle_switch/toggle_switch.dart';
+
+const String title = 'Surat Keterangan Domisili';
+final _formKey = GlobalKey<FormState>();
+final dio = Dio();
+
+class MyDropDownItems {
+  MyDropDownItems({
+    required this.text,
+    required this.value,
+  });
+
+  String text;
+  String value;
+
+  @override
+  String toString() {
+    return value;
+  }
+}
+
+class EsuketSktmFormScreen extends StatefulWidget {
+  final int? id;
+  const EsuketSktmFormScreen({super.key, this.id});
+
+  @override
+  State<EsuketSktmFormScreen> createState() => _EsuketSktmFormScreenState();
+}
+
+class _EsuketSktmFormScreenState extends State<EsuketSktmFormScreen> {
+  TextEditingController nikCtrl = TextEditingController();
+  TextEditingController peruntukanCtrl = TextEditingController();
+  TextEditingController pengantarCtrl = TextEditingController();
+  String registerAsCtrl = 'perorangan';
+  TextEditingController kepadaCtrl = TextEditingController();
+  TextEditingController kepadaNamaAnakCtrl = TextEditingController();
+  TextEditingController kepadaTempatLhrCtrl = TextEditingController();
+  TextEditingController kepadaTglLhrCtrl = TextEditingController();
+  TextEditingController kepadaGenderCtrl = TextEditingController();
+  TextEditingController kepadaHubunganCtrl = TextEditingController();
+  TextEditingController kepadaSekolahCtrl = TextEditingController();
+  TextEditingController kepadaKelasCtrl = TextEditingController();
+  TextEditingController kepadaAlamatSekolahCtrl = TextEditingController();
+  TextEditingController kategoriCtrl = TextEditingController();
+  File? fileUpload;
+  bool isLoadingSubmit = false;
+
+  // Initial Selected Value
+  String _dropdownvalue = ' ';
+
+  final _dropDownItems = [
+    MyDropDownItems(text: "LAKI-LAKI", value: "1"),
+    MyDropDownItems(text: "PEREMPUAN", value: "2"),
+  ];
+
+  Future handleFileUpload() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['jpg', 'png'],
+    );
+
+    if (result != null) {
+      File file = File(result.files.single.path!);
+      print('filePicker: ${file.path}');
+      pengantarCtrl.text = result.files.first.name;
+      setState(() {
+        fileUpload = file;
+      });
+    } else {
+      // User canceled the picker
+      print('filePicker: user canceled the picker!');
+    }
+  }
+
+  Future handleSubmit() async {
+    setState(() {
+      isLoadingSubmit = true;
+    });
+    try {
+      String? esuketToken = await EsuketController().getToken();
+      FormData formData = FormData.fromMap({
+        'nik': nikCtrl.text,
+        'peruntukan': peruntukanCtrl.text,
+        'pengantar': await MultipartFile.fromFile(fileUpload!.path,
+            filename: pengantarCtrl.text),
+        'register_as': registerAsCtrl,
+        'kepada': kepadaCtrl.text,
+        'kepada_tempat_lhr': kepadaCtrl.text,
+        'kepada_tgl_lhr': kepadaCtrl.text,
+        'kepada_gender': kepadaCtrl.text,
+        'kepada_hubungan': kepadaCtrl.text,
+        'kepada_sekolah': kepadaCtrl.text,
+        'kepada_kelas': kepadaCtrl.text,
+        'kepada_alamat_sekolah': kepadaCtrl.text,
+        'kategori': kepadaCtrl.text,
+      });
+      String url = '${dotenv.env['ESUKET_BASE_URL']}/api/sktm';
+      Response response = await dio.post(
+        url,
+        data: formData,
+        options: Options(
+          headers: {
+            'Accept': 'application/json',
+            'Authorization': 'Bearer $esuketToken',
+          },
+        ),
+      );
+      handleSnackbar(context, response.data['message']);
+      setState(() {
+        isLoadingSubmit = false;
+      });
+    } on DioException catch (e) {
+      setState(() {
+        isLoadingSubmit = false;
+      });
+      print(
+          'errorSubmit: ${e.response == null ? e.message : e.response?.data.toString()}');
+    }
+  }
+
+  void handleSnackbar(BuildContext content, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+      ),
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      registerAsCtrl = 'perorangan';
+    });
+  }
+
+  @override
+  void dispose() {
+    nikCtrl.dispose();
+    kepadaCtrl.dispose();
+    peruntukanCtrl.dispose();
+    pengantarCtrl.dispose();
+    kepadaTempatLhrCtrl.dispose();
+    kepadaTglLhrCtrl.dispose();
+    kepadaGenderCtrl.dispose();
+    kepadaHubunganCtrl.dispose();
+    kepadaSekolahCtrl.dispose();
+    kepadaKelasCtrl.dispose();
+    kepadaAlamatSekolahCtrl.dispose();
+    kategoriCtrl.dispose();
+    super.dispose();
+  }
+
+  // final List<String> genderItems = ['LAKI-LAKI', 'PEREMPUAN'];
+  String? selectedValue;
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<EsuketController>(builder: (context, esuket, child) {
+      nikCtrl.text = esuket.user!.nik!;
+      kepadaCtrl.text = esuket.user!.name!;
+
+      return GestureDetector(
+        onTap: () {
+          FocusManager.instance.primaryFocus?.unfocus();
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(esuket.appName),
+          ),
+          body: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 10,
+                        horizontal: 20,
+                      ),
+                      decoration: const BoxDecoration(
+                        color: Colors.transparent,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Form',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            'Buat $title',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 20),
+                          child: Form(
+                            key: _formKey,
+                            child: Wrap(
+                              runSpacing: 15,
+                              children: [
+                                TextFormFieldWidget(
+                                  attributeCtrl: nikCtrl,
+                                  labelText: 'NIK',
+                                  iconData: Icons.badge,
+                                  isRequired: true,
+                                ),
+                                TextFormFieldWidget(
+                                  attributeCtrl: kepadaCtrl,
+                                  labelText: 'Kepada',
+                                  iconData: Icons.more_horiz,
+                                  isRequired: true,
+                                ),
+                                TextFormFieldWidget(
+                                  attributeCtrl: peruntukanCtrl,
+                                  labelText: 'Peruntukan',
+                                  iconData: Icons.more_horiz,
+                                  isRequired: true,
+                                ),
+                                FormUploadWidget(
+                                  label: const Text.rich(
+                                    TextSpan(
+                                      text: 'Upload file pengantar',
+                                      children: [
+                                        TextSpan(
+                                          text: ' *',
+                                          style: TextStyle(color: Colors.red),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  fileImage: fileUpload,
+                                  onTap: () => handleFileUpload(),
+                                  onDelete: () {
+                                    setState(() {
+                                      fileUpload = null;
+                                    });
+                                  },
+                                ),
+                                ToggleSwitch(
+                                  initialLabelIndex:
+                                      registerAsCtrl == 'perorangan' ? 0 : 1,
+                                  fontSize: 16,
+                                  minWidth: double.infinity,
+                                  minHeight: 55,
+                                  activeBgColor: [Colors.black.withAlpha(150)],
+                                  inactiveBgColor: Colors.white,
+                                  labels: const ['Perorangan', 'Sekolah'],
+                                  icons: const [Icons.person, Icons.apartment],
+                                  iconSize: 22,
+                                  onToggle: (index) {
+                                    setState(() {
+                                      registerAsCtrl =
+                                          index == 0 ? 'perorangan' : 'sekolah';
+                                    });
+                                  },
+                                ),
+                                Builder(
+                                  builder: (context) {
+                                    if (registerAsCtrl == 'sekolah') {
+                                      return Wrap(
+                                        runSpacing: 15,
+                                        children: [
+                                          TextFormFieldWidget(
+                                            attributeCtrl: kepadaNamaAnakCtrl,
+                                            labelText: 'Nama Anak',
+                                            iconData: Icons.more_horiz,
+                                            isRequired:
+                                                registerAsCtrl == 'sekolah',
+                                          ),
+                                          TextFormFieldWidget(
+                                            attributeCtrl: kepadaTempatLhrCtrl,
+                                            labelText: 'Tempat Lahir',
+                                            iconData: Icons.more_horiz,
+                                            isRequired:
+                                                registerAsCtrl == 'sekolah',
+                                          ),
+                                          TextFormFieldWidget(
+                                            attributeCtrl: kepadaTglLhrCtrl,
+                                            labelText: 'Tanggal Lahir',
+                                            iconData: Icons.more_horiz,
+                                            isRequired:
+                                                registerAsCtrl == 'sekolah',
+                                          ),
+                                          DropdownButtonFormField2<String>(
+                                            isExpanded: true,
+                                            decoration: InputDecoration(
+                                              filled: true,
+                                              fillColor: Colors.white,
+                                              contentPadding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 16),
+                                              border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(15),
+                                              ),
+                                            ),
+                                            hint: const Text(
+                                              'Jenis Kelamin',
+                                              style: TextStyle(fontSize: 14),
+                                            ),
+                                            items: _dropDownItems.map(
+                                                (MyDropDownItems
+                                                    myDropDownItems) {
+                                              return DropdownMenuItem(
+                                                value: myDropDownItems.value,
+                                                child:
+                                                    Text(myDropDownItems.text),
+                                              );
+                                            }).toList(),
+                                            validator: (value) {
+                                              if (value == null) {
+                                                return 'Mohon Pilih Terlebih Dahulu.';
+                                              }
+                                              return null;
+                                            },
+                                            onChanged: (value) {
+                                              setState(() {
+                                                _dropdownvalue = value!;
+                                              });
+                                            },
+                                            onSaved: (value) {
+                                              selectedValue = value.toString();
+                                            },
+                                            buttonStyleData:
+                                                const ButtonStyleData(
+                                              padding:
+                                                  EdgeInsets.only(right: 8),
+                                            ),
+                                            iconStyleData: const IconStyleData(
+                                              icon: Icon(
+                                                Icons.arrow_drop_down,
+                                                color: Colors.black45,
+                                              ),
+                                              iconSize: 24,
+                                            ),
+                                            dropdownStyleData:
+                                                DropdownStyleData(
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(15),
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            menuItemStyleData:
+                                                const MenuItemStyleData(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 16),
+                                            ),
+                                            dropdownSearchData:
+                                                DropdownSearchData(
+                                                    searchController:
+                                                        kepadaGenderCtrl,
+                                                    searchInnerWidgetHeight: 50,
+                                                    searchInnerWidget:
+                                                        Container(
+                                                      height: 50,
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                        top: 8,
+                                                        bottom: 4,
+                                                        right: 8,
+                                                        left: 8,
+                                                      ),
+                                                      child: TextFormField(
+                                                        expands: true,
+                                                        maxLines: null,
+                                                        controller:
+                                                            kepadaGenderCtrl,
+                                                        decoration:
+                                                            InputDecoration(
+                                                          filled: true,
+                                                          fillColor:
+                                                              Colors.white,
+                                                          isDense: true,
+                                                          contentPadding:
+                                                              const EdgeInsets
+                                                                  .symmetric(
+                                                            horizontal: 10,
+                                                            vertical: 8,
+                                                          ),
+                                                          hintText: 'Cari...',
+                                                          hintStyle:
+                                                              const TextStyle(
+                                                                  fontSize: 12),
+                                                          border:
+                                                              OutlineInputBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        8),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    searchMatchFn:
+                                                        (item, searchValue) {
+                                                      final myItem = _dropDownItems
+                                                          .firstWhere(
+                                                              (element) =>
+                                                                  element
+                                                                      .value ==
+                                                                  item.value);
+                                                      return myItem.text
+                                                              .toLowerCase()
+                                                              .contains(searchValue
+                                                                  .toLowerCase()) ||
+                                                          item.value
+                                                              .toString()
+                                                              .toLowerCase()
+                                                              .contains(searchValue
+                                                                  .toLowerCase());
+                                                    }),
+                                            onMenuStateChange: (isOpen) {
+                                              if (!isOpen) {
+                                                kepadaGenderCtrl.clear();
+                                              }
+                                            },
+                                          ),
+                                          TextFormFieldWidget(
+                                            attributeCtrl: kepadaHubunganCtrl,
+                                            labelText: 'Hubungan Keluarga',
+                                            iconData: Icons.more_horiz,
+                                            isRequired:
+                                                registerAsCtrl == 'sekolah',
+                                          ),
+                                          TextFormFieldWidget(
+                                            attributeCtrl: kepadaSekolahCtrl,
+                                            labelText: 'Nama Sekolah',
+                                            iconData: Icons.more_horiz,
+                                            isRequired:
+                                                registerAsCtrl == 'sekolah',
+                                          ),
+                                          TextFormFieldWidget(
+                                            attributeCtrl:
+                                                kepadaAlamatSekolahCtrl,
+                                            labelText: 'Alamat Sekolah',
+                                            iconData: Icons.more_horiz,
+                                            isRequired:
+                                                registerAsCtrl == 'sekolah',
+                                          ),
+                                          TextFormFieldWidget(
+                                            attributeCtrl: kategoriCtrl,
+                                            labelText: 'Kategori DTKS',
+                                            iconData: Icons.more_horiz,
+                                            isRequired:
+                                                registerAsCtrl == 'sekolah',
+                                          ),
+                                          const SizedBox(height: 75),
+                                        ],
+                                      );
+                                    }
+                                    return Container();
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 60),
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                ),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: TextButton.icon(
+                    style: ButtonStyle(
+                      padding: const WidgetStatePropertyAll(
+                        EdgeInsets.symmetric(vertical: 15),
+                      ),
+                      shape: const WidgetStatePropertyAll(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(10),
+                          ),
+                        ),
+                      ),
+                      backgroundColor: WidgetStatePropertyAll(
+                        Theme.of(context).colorScheme.primary,
+                      ),
+                      overlayColor: WidgetStatePropertyAll(
+                        Colors.black.withOpacity(0.2),
+                      ),
+                      foregroundColor:
+                          const WidgetStatePropertyAll(Colors.white),
+                    ),
+                    onPressed: () {
+                      if (pengantarCtrl.text.isEmpty) {
+                        print('upload file dulu woy!!!');
+                      }
+                      if (_formKey.currentState!.validate() &&
+                          fileUpload != null) {
+                        print('you tapped the submit button');
+                        handleSubmit();
+                      }
+                    },
+                    label: const Icon(Icons.check),
+                    icon: Text(
+                      isLoadingSubmit ? 'Processing...' : 'Submit',
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    });
+  }
+}

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pecut/controllers/esuket_controller.dart';
 import 'package:pecut/models/theme_color_model.dart';
+import 'package:pecut/views/layanan/esuket/sktm/sktm_form_screen.dart';
 import 'package:pecut/widgets/datalistview_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -113,12 +114,12 @@ class EsuketSktmListScreen extends StatelessWidget {
           ),
           floatingActionButton: IconButton(
             onPressed: () {
-              // Navigator.of(context).push(
-              //   MaterialPageRoute(
-              //     builder: (context) => const EsuketSkbnFormScreen(),
-              //   ),
-              // );
-              print('navigateTo: $title forms!');
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const EsuketSktmFormScreen(),
+                ),
+              );
+              // print('navigateTo: $title forms!');
             },
             icon: const Icon(
               Icons.add,

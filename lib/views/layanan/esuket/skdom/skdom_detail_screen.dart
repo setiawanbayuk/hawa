@@ -10,16 +10,16 @@ import 'package:provider/provider.dart';
 
 final dio = Dio();
 
-class EsuketSkbnDetailScreen extends StatelessWidget {
+class EsuketSkdomDetailScreen extends StatelessWidget {
   final int id;
-  const EsuketSkbnDetailScreen({
+  const EsuketSkdomDetailScreen({
     super.key,
     required this.id,
   });
 
   Future fetchData(String nik, String token) async {
     print('fetching data...');
-    String url = '${dotenv.env['ESUKET_BASE_URL']}/api/skbn?nik=$nik';
+    String url = '${dotenv.env['ESUKET_BASE_URL']}/api/skdom?nik=$nik';
     Response response = await dio.get(
       url,
       options: Options(
@@ -215,6 +215,7 @@ class EsuketSkbnDetailScreen extends StatelessWidget {
                           .where((item) => item['id'] == id)
                           .toList();
                       Map<String, dynamic> item = items[0];
+                      
                       return TimelinePelayananWidget(dataPelayanan: item);
                     } else {
                       return const Center(

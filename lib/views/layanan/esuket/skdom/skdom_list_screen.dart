@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pecut/controllers/esuket_controller.dart';
 import 'package:pecut/models/theme_color_model.dart';
+import 'package:pecut/views/layanan/esuket/skdom/skdom_detail_screen.dart';
 import 'package:pecut/views/layanan/esuket/skdom/skdom_form_screen.dart';
 import 'package:pecut/widgets/datalistview_widget.dart';
 import 'package:provider/provider.dart';
@@ -13,13 +14,17 @@ const String title = 'Surat Keterangan Domisili';
 
 final List<Map<String, dynamic>> actions = <Map<String, dynamic>>[
   {
-    'value': 'edit',
-    'label': 'Edit',
+    'value': 'view',
+    'label': 'Detail',
   },
-  {
-    'value': 'delete',
-    'label': 'Delete',
-  }
+  // {
+  //   'value': 'edit',
+  //   'label': 'Edit',
+  // },
+  // {
+  //   'value': 'delete',
+  //   'label': 'Delete',
+  // }
 ];
 
 class EsuketSkdomListScreen extends StatelessWidget {
@@ -99,8 +104,28 @@ class EsuketSkdomListScreen extends StatelessWidget {
                               statusName: item['st']['name'],
                               bgColor: theme.bgColor,
                               textColor: theme.textColor,
+                              actions: actions,
                               onSelected: (val) {
                                 print('selected: $val, withID: ${item['id']}');
+                                if (val == 'edit') {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          EsuketSkdomFormScreen(
+                                        id: item['id'],
+                                      ),
+                                    ),
+                                  );
+                                } else if (val == 'view') {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          EsuketSkdomDetailScreen(
+                                        id: item['id'],
+                                      ),
+                                    ),
+                                  );
+                                }
                               },
                             );
                           },

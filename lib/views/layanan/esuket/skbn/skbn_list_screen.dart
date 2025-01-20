@@ -11,6 +11,20 @@ import 'package:pecut/widgets/datalistview_widget.dart';
 import 'package:provider/provider.dart';
 
 const String title = 'Surat Keterangan Belum Menikah';
+final List<Map<String, dynamic>> actions = <Map<String, dynamic>>[
+  {
+    'value': 'view',
+    'label': 'Detail',
+  },
+  // {
+  //   'value': 'edit',
+  //   'label': 'Edit',
+  // },
+  // {
+  //   'value': 'delete',
+  //   'label': 'Delete',
+  // }
+];
 
 class EsuketSkbnListScreen extends StatefulWidget {
   const EsuketSkbnListScreen({super.key});
@@ -94,9 +108,7 @@ class _EsuketSkbnListScreenState extends State<EsuketSkbnListScreen> {
                               statusName: item['st']['name'],
                               bgColor: theme.bgColor,
                               textColor: theme.textColor,
-                              actions: const [
-                                {'value': 'view', 'label': 'Detail'},
-                              ],
+                              actions: actions,
                               onSelected: (val) {
                                 print('selected: $val, withID: ${item['id']}');
                                 if (val == 'edit') {

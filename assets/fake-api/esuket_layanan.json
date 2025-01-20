@@ -15,44 +15,14 @@
     "description": "Layanan Surat Keterangan Domisili"
   },
   {
-    "name": "Surat Kelahiran",
-    "slug": "sklahir",
-    "description": "Layanan Surat Keterangan Kelahiran"
-  },
-  {
-    "name": "Surat Kematian",
-    "slug": "skmati",
-    "description": "Layanan Surat Keterangan Kematian"
-  },
-  {
-    "name": "Surat Permohonan KTP",
-    "slug": "skktp",
-    "description": "Layanan Surat Keterangan Permohonan KTP"
-  },
-  {
-    "name": "Surat Permohonan KK",
-    "slug": "skkk",
-    "description": "Layanan Surat Keterangan Permohonan KK"
-  },
-  {
     "name": "Surat Keterangan Miskin",
     "slug": "sktm",
     "description": "Layanan Surat Keterangan Miskin"
   },
   {
-    "name": "Surat Pengajuan SKCK",
-    "slug": "skck",
-    "description": "Layanan Surat Pengajuan SKCK"
-  },
-  {
     "name": "Surat Penghasilan",
     "slug": "skhsl",
     "description": "Layanan Surat Keterangan Penghasilan"
-  },
-  {
-    "name": "Surat Pindah",
-    "slug": "skpindah",
-    "description": "Layanan Surat Keterangan Pindah"
   },
   {
     "name": "Surat Usaha",

@@ -17,7 +17,8 @@ final _formKey = GlobalKey<FormState>();
 final dio = Dio();
 
 class EsuketSkdomFormScreen extends StatefulWidget {
-  const EsuketSkdomFormScreen({super.key});
+  final int? id;
+  const EsuketSkdomFormScreen({super.key, this.id});
 
   @override
   State<EsuketSkdomFormScreen> createState() => _EsuketSkdomFormScreenState();
