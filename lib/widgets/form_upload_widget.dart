@@ -66,7 +66,7 @@ class FormUploadWidget extends StatelessWidget {
                     icon: const Icon(Icons.file_upload_outlined),
                     style: ButtonStyle(
                       backgroundColor: WidgetStatePropertyAll(
-                        Colors.black.withOpacity(0.5),
+                        Colors.black.withValues(alpha: .5),
                       ),
                       foregroundColor:
                           const WidgetStatePropertyAll(Colors.white),

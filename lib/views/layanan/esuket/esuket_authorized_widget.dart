@@ -89,7 +89,10 @@ class EsuketAuthorizedWidget extends StatelessWidget {
                   ),
                   style: ButtonStyle(
                     backgroundColor: WidgetStatePropertyAll(
-                      Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                      Theme.of(context)
+                          .colorScheme
+                          .primary
+                          .withValues(alpha: .2),
                     ),
                     padding: const WidgetStatePropertyAll(
                       EdgeInsets.symmetric(horizontal: 30),

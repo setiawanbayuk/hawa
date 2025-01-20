@@ -40,7 +40,7 @@ class _CardLayananWidgetState extends State<CardLayananWidget> {
                   color: Colors.white,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(0.1),
+                      color: Colors.grey.withValues(alpha: .1),
                       spreadRadius: 1,
                       blurRadius: 1,
                       offset: const Offset(0, 0), // changes position of shadow

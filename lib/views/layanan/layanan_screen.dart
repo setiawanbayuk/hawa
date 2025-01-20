@@ -60,7 +60,7 @@ class LayananScreen extends StatelessWidget {
               width: MediaQuery.sizeOf(context).width,
               height: 75,
               decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(0.0),
+                color: Colors.grey.withValues(alpha: .0),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,

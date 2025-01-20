@@ -125,7 +125,7 @@ class _LayananCategoryScreenState extends State<LayananCategoryScreen> {
                                 leading: const Icon(Icons.search),
                                 elevation: const WidgetStatePropertyAll(0),
                                 backgroundColor: WidgetStatePropertyAll(
-                                  Colors.white.withOpacity(0.8),
+                                  Colors.white.withValues(alpha: .8),
                                 ),
                                 hintText: 'Telusuri layanan',
                               ).animate().fadeIn().slideY(),
