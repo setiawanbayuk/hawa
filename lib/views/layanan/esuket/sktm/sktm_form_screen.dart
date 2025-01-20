@@ -8,6 +8,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pecut/controllers/esuket_controller.dart';
+import 'package:pecut/widgets/dropdown_widget.dart';
 import 'package:pecut/widgets/form_upload_widget.dart';
 import 'package:pecut/widgets/text_form_field_widget.dart';
 import 'package:provider/provider.dart';
@@ -16,21 +17,6 @@ import 'package:toggle_switch/toggle_switch.dart';
 const String title = 'Surat Keterangan Domisili';
 final _formKey = GlobalKey<FormState>();
 final dio = Dio();
-
-class MyDropDownItems {
-  MyDropDownItems({
-    required this.text,
-    required this.value,
-  });
-
-  String text;
-  String value;
-
-  @override
-  String toString() {
-    return value;
-  }
-}
 
 class EsuketSktmFormScreen extends StatefulWidget {
   final int? id;
@@ -308,141 +294,9 @@ class _EsuketSktmFormScreenState extends State<EsuketSktmFormScreen> {
                                             isRequired:
                                                 registerAsCtrl == 'sekolah',
                                           ),
-                                          DropdownButtonFormField2<String>(
-                                            isExpanded: true,
-                                            decoration: InputDecoration(
-                                              filled: true,
-                                              fillColor: Colors.white,
-                                              contentPadding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 16),
-                                              border: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(15),
-                                              ),
-                                            ),
-                                            hint: const Text(
-                                              'Jenis Kelamin',
-                                              style: TextStyle(fontSize: 14),
-                                            ),
-                                            items: _dropDownItems.map(
-                                                (MyDropDownItems
-                                                    myDropDownItems) {
-                                              return DropdownMenuItem(
-                                                value: myDropDownItems.value,
-                                                child:
-                                                    Text(myDropDownItems.text),
-                                              );
-                                            }).toList(),
-                                            validator: (value) {
-                                              if (value == null) {
-                                                return 'Mohon Pilih Terlebih Dahulu.';
-                                              }
-                                              return null;
-                                            },
-                                            onChanged: (value) {
-                                              setState(() {
-                                                _dropdownvalue = value!;
-                                              });
-                                            },
-                                            onSaved: (value) {
-                                              selectedValue = value.toString();
-                                            },
-                                            buttonStyleData:
-                                                const ButtonStyleData(
-                                              padding:
-                                                  EdgeInsets.only(right: 8),
-                                            ),
-                                            iconStyleData: const IconStyleData(
-                                              icon: Icon(
-                                                Icons.arrow_drop_down,
-                                                color: Colors.black45,
-                                              ),
-                                              iconSize: 24,
-                                            ),
-                                            dropdownStyleData:
-                                                DropdownStyleData(
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(15),
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                            menuItemStyleData:
-                                                const MenuItemStyleData(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 16),
-                                            ),
-                                            dropdownSearchData:
-                                                DropdownSearchData(
-                                                    searchController:
-                                                        kepadaGenderCtrl,
-                                                    searchInnerWidgetHeight: 50,
-                                                    searchInnerWidget:
-                                                        Container(
-                                                      height: 50,
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                        top: 8,
-                                                        bottom: 4,
-                                                        right: 8,
-                                                        left: 8,
-                                                      ),
-                                                      child: TextFormField(
-                                                        expands: true,
-                                                        maxLines: null,
-                                                        controller:
-                                                            kepadaGenderCtrl,
-                                                        decoration:
-                                                            InputDecoration(
-                                                          filled: true,
-                                                          fillColor:
-                                                              Colors.white,
-                                                          isDense: true,
-                                                          contentPadding:
-                                                              const EdgeInsets
-                                                                  .symmetric(
-                                                            horizontal: 10,
-                                                            vertical: 8,
-                                                          ),
-                                                          hintText: 'Cari...',
-                                                          hintStyle:
-                                                              const TextStyle(
-                                                                  fontSize: 12),
-                                                          border:
-                                                              OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        8),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    searchMatchFn:
-                                                        (item, searchValue) {
-                                                      final myItem = _dropDownItems
-                                                          .firstWhere(
-                                                              (element) =>
-                                                                  element
-                                                                      .value ==
-                                                                  item.value);
-                                                      return myItem.text
-                                                              .toLowerCase()
-                                                              .contains(searchValue
-                                                                  .toLowerCase()) ||
-                                                          item.value
-                                                              .toString()
-                                                              .toLowerCase()
-                                                              .contains(searchValue
-                                                                  .toLowerCase());
-                                                    }),
-                                            onMenuStateChange: (isOpen) {
-                                              if (!isOpen) {
-                                                kepadaGenderCtrl.clear();
-                                              }
-                                            },
-                                          ),
+                                          DropdownWidget(dropDownItems: _dropDownItems, inputController: kepadaGenderCtrl, onChanged: (value){
+                                            print(value);
+                                          }),
                                           TextFormFieldWidget(
                                             attributeCtrl: kepadaHubunganCtrl,
                                             labelText: 'Hubungan Keluarga',
