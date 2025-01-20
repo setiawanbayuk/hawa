@@ -44,10 +44,7 @@ class _EsuketSktmFormScreenState extends State<EsuketSktmFormScreen> {
   File? fileUpload;
   bool isLoadingSubmit = false;
 
-  // Initial Selected Value
-  String _dropdownvalue = ' ';
-
-  final _dropDownItems = [
+  final genderItems = [
     MyDropDownItems(text: "LAKI-LAKI", value: "1"),
     MyDropDownItems(text: "PEREMPUAN", value: "2"),
   ];
@@ -294,9 +291,14 @@ class _EsuketSktmFormScreenState extends State<EsuketSktmFormScreen> {
                                             isRequired:
                                                 registerAsCtrl == 'sekolah',
                                           ),
-                                          DropdownWidget(dropDownItems: _dropDownItems, inputController: kepadaGenderCtrl, onChanged: (value){
-                                            print(value);
-                                          }),
+                                          DropdownWidget(
+                                            dropDownItems: genderItems,
+                                            inputController: kepadaGenderCtrl,
+                                            onChanged: (value) {
+                                              print(value);
+                                            },
+                                            judul: "Jenis Kelamin",
+                                          ),
                                           TextFormFieldWidget(
                                             attributeCtrl: kepadaHubunganCtrl,
                                             labelText: 'Hubungan Keluarga',

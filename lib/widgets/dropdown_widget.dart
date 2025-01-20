@@ -21,11 +21,13 @@ class DropdownWidget extends StatefulWidget {
   final List<MyDropDownItems> dropDownItems;
   final TextEditingController inputController;
   final Function onChanged;
+  final String judul;
   const DropdownWidget({
     super.key,
     required this.dropDownItems,
     required this.inputController,
     required this.onChanged,
+    required this.judul,
   });
 
   @override
@@ -48,8 +50,8 @@ class _DropdownWidgetState extends State<DropdownWidget> {
           borderRadius: BorderRadius.circular(15),
         ),
       ),
-      hint: const Text(
-        'Jenis Kelamin',
+      hint: Text(
+        widget.judul,
         style: TextStyle(fontSize: 14),
       ),
       items: widget.dropDownItems.map((MyDropDownItems myDropDownItems) {
