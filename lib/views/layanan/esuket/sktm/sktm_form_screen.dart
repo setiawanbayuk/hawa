@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 import 'package:pecut/controllers/esuket_controller.dart';
+import 'package:pecut/widgets/datepicker_button_widget.dart';
 import 'package:pecut/widgets/dropdown_widget.dart';
 import 'package:pecut/widgets/form_upload_widget.dart';
 import 'package:pecut/widgets/text_form_field_widget.dart';
@@ -322,29 +323,9 @@ class _EsuketSktmFormScreenState extends State<EsuketSktmFormScreen> {
                                                       'sekolah',
                                                 ),
                                               ),
-                                              ElevatedButton(
-                                                onPressed: () async {
-                                                  final DateTime? dateTime =
-                                                      await showDatePicker(
-                                                    context: context,
-                                                    initialDate: selectedDate,
-                                                    firstDate: DateTime(2000),
-                                                    lastDate: DateTime(2100),
-                                                  );
-                                                  if (dateTime != null) {
-                                                    setState(() {
-                                                      selectedDate = dateTime;
-                                                      kepadaTglLhrCtrl
-                                                          .text = DateFormat(
-                                                              "yyyy-MM-dd")
-                                                          .format(selectedDate)
-                                                          .toString();
-                                                    });
-                                                  }
-                                                },
-                                                child: Icon(Icons
-                                                    .calendar_month_outlined),
-                                              ),
+                                              DatepickerButtonWidget(
+                                                  attributeCtrl:
+                                                      kepadaTglLhrCtrl),
                                             ],
                                           ),
                                           DropdownWidget(
