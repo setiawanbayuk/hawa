@@ -30,7 +30,7 @@ class TimelinePelayananWidget extends StatelessWidget {
                   title: Text(dataPelayanan['history'][index]['st']['name']),
                   subtitle: Text(DateFormat('dd MMM yyyy HH:mm')
                       .format(DateTime.parse(
-                          dataPelayanan['history'][index]['created_at']))
+                          dataPelayanan['history'][index]['created_at']).toLocal())
                       .toString()),
                   tileColor: Colors.white,
                   shape: RoundedRectangleBorder(

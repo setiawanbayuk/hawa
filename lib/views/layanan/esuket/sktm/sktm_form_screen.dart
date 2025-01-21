@@ -3,10 +3,10 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:intl/intl.dart';
 import 'package:pecut/controllers/esuket_controller.dart';
 import 'package:pecut/widgets/dropdown_widget.dart';
 import 'package:pecut/widgets/form_upload_widget.dart';
@@ -92,15 +92,17 @@ class _EsuketSktmFormScreenState extends State<EsuketSktmFormScreen> {
         'pengantar': await MultipartFile.fromFile(fileUpload!.path,
             filename: pengantarCtrl.text),
         'register_as': registerAsCtrl,
-        'kepada': kepadaCtrl.text,
-        'kepada_tempat_lhr': kepadaCtrl.text,
-        'kepada_tgl_lhr': kepadaCtrl.text,
-        'kepada_gender': kepadaCtrl.text,
-        'kepada_hubungan': kepadaCtrl.text,
-        'kepada_sekolah': kepadaCtrl.text,
-        'kepada_kelas': kepadaCtrl.text,
-        'kepada_alamat_sekolah': kepadaCtrl.text,
-        'kategori': kepadaCtrl.text,
+        'kepada': (registerAsCtrl == 'sekolah'
+            ? kepadaNamaAnakCtrl.text
+            : kepadaCtrl.text),
+        'kepada_tempat_lhr': kepadaTempatLhrCtrl.text,
+        'kepada_tgl_lhr': kepadaTglLhrCtrl.text,
+        'kepada_gender': kepadaGenderCtrl.text,
+        'kepada_hubungan': kepadaHubunganCtrl.text,
+        'kepada_sekolah': kepadaSekolahCtrl.text,
+        'kepada_kelas': kepadaKelasCtrl.text,
+        'kepada_alamat_sekolah': kepadaAlamatSekolahCtrl.text,
+        'kategori': kategoriCtrl.text,
       });
       String url = '${dotenv.env['ESUKET_BASE_URL']}/api/sktm';
       Response response = await dio.post(
@@ -163,6 +165,7 @@ class _EsuketSktmFormScreenState extends State<EsuketSktmFormScreen> {
   String? selectedValue;
   @override
   Widget build(BuildContext context) {
+    DateTime selectedDate = DateTime.now();
     return Consumer<EsuketController>(builder: (context, esuket, child) {
       nikCtrl.text = esuket.user!.nik!;
       kepadaCtrl.text = esuket.user!.name!;
@@ -238,6 +241,15 @@ class _EsuketSktmFormScreenState extends State<EsuketSktmFormScreen> {
                                   iconData: Icons.more_horiz,
                                   isRequired: true,
                                 ),
+                                DropdownWidget(
+                                  dropDownItems: kategoriItems,
+                                  inputController: kategoriCtrl,
+                                  onChanged: (value) {
+                                    kategoriCtrl.text = value;
+                                  },
+                                  judul: "Kategori DTSKS",
+                                ),
+                                const SizedBox(height: 75),
                                 FormUploadWidget(
                                   label: const Text.rich(
                                     TextSpan(
@@ -296,18 +308,50 @@ class _EsuketSktmFormScreenState extends State<EsuketSktmFormScreen> {
                                             isRequired:
                                                 registerAsCtrl == 'sekolah',
                                           ),
-                                          TextFormFieldWidget(
-                                            attributeCtrl: kepadaTglLhrCtrl,
-                                            labelText: 'Tanggal Lahir',
-                                            iconData: Icons.more_horiz,
-                                            isRequired:
-                                                registerAsCtrl == 'sekolah',
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Expanded(
+                                                child: TextFormFieldWidget(
+                                                  attributeCtrl:
+                                                      kepadaTglLhrCtrl,
+                                                  labelText: 'Tanggal Lahir',
+                                                  iconData: Icons.more_horiz,
+                                                  isRequired: registerAsCtrl ==
+                                                      'sekolah',
+                                                ),
+                                              ),
+                                              ElevatedButton(
+                                                onPressed: () async {
+                                                  final DateTime? dateTime =
+                                                      await showDatePicker(
+                                                    context: context,
+                                                    initialDate: selectedDate,
+                                                    firstDate: DateTime(2000),
+                                                    lastDate: DateTime(2100),
+                                                  );
+                                                  if (dateTime != null) {
+                                                    setState(() {
+                                                      selectedDate = dateTime;
+                                                      kepadaTglLhrCtrl
+                                                          .text = DateFormat(
+                                                              "yyyy-MM-dd")
+                                                          .format(selectedDate)
+                                                          .toString();
+                                                    });
+                                                  }
+                                                },
+                                                child: Icon(Icons
+                                                    .calendar_month_outlined),
+                                              ),
+                                            ],
                                           ),
                                           DropdownWidget(
                                             dropDownItems: genderItems,
                                             inputController: kepadaGenderCtrl,
                                             onChanged: (value) {
-                                              print(value);
+                                              kepadaGenderCtrl.text = value;
                                             },
                                             judul: "Jenis Kelamin",
                                           ),
@@ -315,13 +359,20 @@ class _EsuketSktmFormScreenState extends State<EsuketSktmFormScreen> {
                                             dropDownItems: hubunganItems,
                                             inputController: kepadaHubunganCtrl,
                                             onChanged: (value) {
-                                              print(value);
+                                              kepadaHubunganCtrl.text = value;
                                             },
                                             judul: "Hubungan Keluarga",
                                           ),
                                           TextFormFieldWidget(
                                             attributeCtrl: kepadaSekolahCtrl,
                                             labelText: 'Nama Sekolah',
+                                            iconData: Icons.more_horiz,
+                                            isRequired:
+                                                registerAsCtrl == 'sekolah',
+                                          ),
+                                          TextFormFieldWidget(
+                                            attributeCtrl: kepadaKelasCtrl,
+                                            labelText: 'Kelas',
                                             iconData: Icons.more_horiz,
                                             isRequired:
                                                 registerAsCtrl == 'sekolah',
@@ -334,15 +385,6 @@ class _EsuketSktmFormScreenState extends State<EsuketSktmFormScreen> {
                                             isRequired:
                                                 registerAsCtrl == 'sekolah',
                                           ),
-                                          DropdownWidget(
-                                            dropDownItems: kategoriItems,
-                                            inputController: kategoriCtrl,
-                                            onChanged: (value) {
-                                              print(value);
-                                            },
-                                            judul: "Kategori DTSKS",
-                                          ),
-                                          const SizedBox(height: 75),
                                         ],
                                       );
                                     }
