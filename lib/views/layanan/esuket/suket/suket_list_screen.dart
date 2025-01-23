@@ -1,16 +1,14 @@
-// ignore_for_file: avoid_print
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pecut/controllers/esuket_controller.dart';
 import 'package:pecut/models/theme_color_model.dart';
-import 'package:pecut/views/layanan/esuket/skbn/skbn_detail_screen.dart';
-import 'package:pecut/views/layanan/esuket/skbn/skbn_form_screen.dart';
+import 'package:pecut/views/layanan/esuket/suket/suket_detail_screen.dart';
+import 'package:pecut/views/layanan/esuket/suket/suket_form_screen.dart';
 import 'package:pecut/widgets/datalistview_widget.dart';
 import 'package:provider/provider.dart';
 
-const String title = 'Surat Keterangan Belum Menikah';
+const String title = 'Surat Keterangan';
 final List<Map<String, dynamic>> actions = <Map<String, dynamic>>[
   {
     'value': 'view',
@@ -18,17 +16,17 @@ final List<Map<String, dynamic>> actions = <Map<String, dynamic>>[
   },
 ];
 
-class EsuketSkbnListScreen extends StatefulWidget {
-  const EsuketSkbnListScreen({super.key});
+class EsuketSuketListScreen extends StatefulWidget {
+  const EsuketSuketListScreen({super.key});
 
   @override
-  State<EsuketSkbnListScreen> createState() => _EsuketSkbnListScreenState();
+  State<EsuketSuketListScreen> createState() => _EsuketSuketListScreenState();
 }
 
-class _EsuketSkbnListScreenState extends State<EsuketSkbnListScreen> {
+class _EsuketSuketListScreenState extends State<EsuketSuketListScreen> {
   Future fetchData(String nik, String token) async {
     final dio = Dio();
-    String url = '${dotenv.env['ESUKET_BASE_URL']}/api/skbn?nik=$nik';
+    String url = '${dotenv.env['ESUKET_BASE_URL']}/api/suket?nik=$nik';
     Response response = await dio.get(
       url,
       options: Options(
@@ -107,7 +105,7 @@ class _EsuketSkbnListScreenState extends State<EsuketSkbnListScreen> {
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                          EsuketSkbnFormScreen(
+                                          EsuketSuketFormScreen(
                                         id: item['id'],
                                       ),
                                     ),
@@ -116,7 +114,7 @@ class _EsuketSkbnListScreenState extends State<EsuketSkbnListScreen> {
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                          EsuketSkbnDetailScreen(
+                                          EsuketSuketDetailScreen(
                                         id: item['id'],
                                       ),
                                     ),
@@ -141,7 +139,7 @@ class _EsuketSkbnListScreenState extends State<EsuketSkbnListScreen> {
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => const EsuketSkbnFormScreen(),
+                  builder: (context) => const EsuketSuketFormScreen(),
                 ),
               );
             },
