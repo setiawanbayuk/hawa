@@ -10,6 +10,7 @@ class TextFormFieldWidget extends StatelessWidget {
   final bool? isRequired;
   final int? minLines;
   final int? maxLines;
+  final void Function(String)? onChanged;
 
   const TextFormFieldWidget({
     super.key,
@@ -20,11 +21,13 @@ class TextFormFieldWidget extends StatelessWidget {
     this.isRequired,
     this.minLines,
     this.maxLines,
+    this.onChanged,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      onChanged: onChanged,
       controller: attributeCtrl,
       keyboardType: textInputType ?? TextInputType.text,
       minLines: minLines,

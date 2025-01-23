@@ -9,6 +9,7 @@ import 'package:pecut/controllers/esuket_controller.dart';
 import 'package:pecut/models/esuket_layanan_model.dart';
 import 'package:pecut/views/layanan/esuket/skbn/skbn_list_screen.dart';
 import 'package:pecut/views/layanan/esuket/skdom/skdom_list_screen.dart';
+import 'package:pecut/views/layanan/esuket/skhsl/skhsl_list_screen.dart';
 import 'package:pecut/views/layanan/esuket/sktm/sktm_list_screen.dart';
 import 'package:pecut/views/layanan/esuket/skusaha/skusaha_list_screen.dart';
 import 'package:pecut/views/layanan/esuket/suket/suket_list_screen.dart';
@@ -185,6 +186,12 @@ class _EsuketServicesWidgetState extends State<EsuketServicesWidget> {
                                             navigateTo(
                                               context,
                                               const EsuketSktmListScreen(),
+                                            );
+                                            break;
+                                          case 'skhsl':
+                                            navigateTo(
+                                              context,
+                                              const EsuketSkhslListScreen(),
                                             );
                                             break;
                                           case 'skusaha':

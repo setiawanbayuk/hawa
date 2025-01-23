@@ -8,13 +8,13 @@ import 'package:provider/provider.dart';
 
 final dio = Dio();
 
-class EsuketSuketDetailScreen extends StatelessWidget {
+class EsuketSkhslDetailScreen extends StatelessWidget {
   final int id;
-  const EsuketSuketDetailScreen({super.key, required this.id});
+  const EsuketSkhslDetailScreen({super.key, required this.id});
 
   Future fetchData(String nik, String token) async {
     print('fetching data...');
-    String url = '${dotenv.env['ESUKET_BASE_URL']}/api/suket?nik=$nik';
+    String url = '${dotenv.env['ESUKET_BASE_URL']}/api/skhsl?nik=$nik';
     Response response = await dio.get(
       url,
       options: Options(
@@ -130,12 +130,6 @@ class EsuketSuketDetailScreen extends StatelessWidget {
                                       ),
                                     ),
                                   ],
-                                ),
-                                Expanded(
-                                  child: ContentWidget(
-                                    value: item['keterangan'],
-                                    label: 'Keterangan:',
-                                  ),
                                 ),
                                 Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,

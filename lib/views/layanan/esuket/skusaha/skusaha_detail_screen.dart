@@ -9,8 +9,8 @@ import 'package:provider/provider.dart';
 final dio = Dio();
 
 class EsuketSkusahaDetailScreen extends StatelessWidget {
-  final int? id;
-  const EsuketSkusahaDetailScreen({super.key, this.id});
+  final int id;
+  const EsuketSkusahaDetailScreen({super.key, required this.id});
   
   Future fetchData(String nik, String token) async {
     print('fetching data...');
