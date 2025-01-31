@@ -51,6 +51,7 @@ dependencies:
   timelines_plus: ^1.0.4
   dropdown_button2: ^2.3.9
   terbilang_id: ^0.1.0
+  searchable_paginated_dropdown: ^1.3.0
 
 dev_dependencies:
   flutter_test:
