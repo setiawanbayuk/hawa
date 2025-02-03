@@ -29,21 +29,53 @@ class _EsuketSkboroFormScreenState extends State<EsuketSkboroFormScreen> {
   TextEditingController kepadaCtrl = TextEditingController();
   TextEditingController peruntukanCtrl = TextEditingController();
   TextEditingController propinsiCtrl = TextEditingController();
+  TextEditingController kabkoCtrl = TextEditingController();
+  TextEditingController kecamatanCtrl = TextEditingController();
+  TextEditingController kelurahanCtrl = TextEditingController();
   TextEditingController alamatCtrl = TextEditingController();
   TextEditingController tglMulaiCtrl = TextEditingController();
   TextEditingController tglSelesaiCtrl = TextEditingController();
   TextEditingController pengantarCtrl = TextEditingController();
+  TextEditingController nikPengikutCtrl = TextEditingController();
+  TextEditingController namaPengikutCtrl = TextEditingController();
+  TextEditingController genderPengikutCtrl = TextEditingController();
+  TextEditingController umurPengikutCtrl = TextEditingController();
+  TextEditingController perkawinanPengikutCtrl = TextEditingController();
+  TextEditingController hubunganPengikutCtrl = TextEditingController();
+
   File? fileUpload;
   bool isLoadingSubmit = false;
   String? selectedValue;
-  String _prop = '';
-  String _kabko = '';
+  // String _prop = '';
+  // String _kabko = '';
+  // String _kec = '';
+  // String _kel = '';
 
-  List<Widget> _pengikut = [];
+  List<String> _pengikutNIK = [];
+  List<String> _pengikutNama = [];
+  List<String> _pengikutGender = [];
+  List<String> _pengikutUmur = [];
+  List<String> _pengikutPerkawinan = [];
+  List<String> _pengikutHubungan = [];
+
+  final genderList = ['LAKI-LAKI', 'PEREMPUAN'];
+  final perkawinanList = [
+    "KAWIN",
+    "BELUM KAWIN",
+    "CERAI HIDUP",
+    "CERAI MATI",
+  ];
 
   final genderItems = [
     MyDropDownItems(text: "LAKI-LAKI", value: "1"),
     MyDropDownItems(text: "PEREMPUAN", value: "2"),
+  ];
+
+  final perkawinanItems = [
+    MyDropDownItems(text: "KAWIN", value: "1"),
+    MyDropDownItems(text: "BELUM KAWIN", value: "2"),
+    MyDropDownItems(text: "CERAI HIDUP", value: "3"),
+    MyDropDownItems(text: "CERAI MATI", value: "4"),
   ];
 
   final hubunganItems = [
@@ -87,10 +119,24 @@ class _EsuketSkboroFormScreenState extends State<EsuketSkboroFormScreen> {
       String? esuketToken = await EsuketController().getToken();
       FormData formData = FormData.fromMap({
         'nik': nikCtrl.text,
+        'provinsi_boro': propinsiCtrl.text,
+        'kabko_boro': kabkoCtrl.text,
+        'kecamatan_boro': kecamatanCtrl.text,
+        'kelurahan_boro': kelurahanCtrl.text,
+        'alamat_boro': alamatCtrl.text,
+        'tgl_awal': tglMulaiCtrl.text,
+        'tgl_akhir': tglSelesaiCtrl.text,
+        'add_nik[]': _pengikutNIK,
+        'add_nama[]': _pengikutNama,
+        'add_jk[]' : _pengikutGender,
+        'add_umr[]' : _pengikutUmur,
+        'add_stat[]' : _pengikutPerkawinan,
+        'add_hub[]' : _pengikutHubungan,
         'peruntukan': peruntukanCtrl.text,
         'pengantar': await MultipartFile.fromFile(fileUpload!.path,
             filename: pengantarCtrl.text),
       });
+      // print(kecamatanCtrl.text);
       String url = '${dotenv.env['ESUKET_BASE_URL']}/api/skboro';
       Response response = await dio.post(
         url,
@@ -235,7 +281,6 @@ class _EsuketSkboroFormScreenState extends State<EsuketSkboroFormScreen> {
                                       ),
                                     ),
                                     hintText: const Text('Search Propinsi'),
-                                    margin: const EdgeInsets.all(15),
                                     paginatedRequest:
                                         (int page, String? searchKey) async {
                                       final List paginatedList =
@@ -255,7 +300,7 @@ class _EsuketSkboroFormScreenState extends State<EsuketSkboroFormScreen> {
                                       return null;
                                     },
                                     onChanged: (val) {
-                                      _prop = val.toString();
+                                      // _prop = val.toString();
                                       propinsiCtrl.text = val.toString();
                                     },
                                   ),
@@ -270,11 +315,12 @@ class _EsuketSkboroFormScreenState extends State<EsuketSkboroFormScreen> {
                                       ),
                                     ),
                                     hintText: const Text('Search Kabko'),
-                                    margin: const EdgeInsets.all(15),
                                     paginatedRequest:
                                         (int page, String? searchKey) async {
                                       final List paginatedList =
-                                          await getKabkoList(key: searchKey, kode: propinsiCtrl.text);
+                                          await getKabkoList(
+                                              key: searchKey,
+                                              kode: propinsiCtrl.text);
                                       return paginatedList
                                           .map(
                                             (e) => SearchableDropdownMenuItem(
@@ -290,17 +336,81 @@ class _EsuketSkboroFormScreenState extends State<EsuketSkboroFormScreen> {
                                       return null;
                                     },
                                     onChanged: (val) {
-                                      _prop = val.toString();
-                                      propinsiCtrl.text = val.toString();
+                                      // _prop = val.toString();
+                                      kabkoCtrl.text = val.toString();
                                     },
                                   ),
-                                  DropdownWidget(
-                                    dropDownItems: hubunganItems,
-                                    inputController: propinsiCtrl,
-                                    onChanged: (value) {
-                                      propinsiCtrl.text = value;
+                                  SearchableDropdownFormField.paginated(
+                                    backgroundDecoration: (child) => Card(
+                                      margin: EdgeInsets.zero,
+                                      color: Colors.white,
+                                      elevation: 3,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: child,
+                                      ),
+                                    ),
+                                    hintText: const Text('Search Kecamatan'),
+                                    paginatedRequest:
+                                        (int page, String? searchKey) async {
+                                      final List paginatedList =
+                                          await getKecamatanList(
+                                              key: searchKey,
+                                              kode: kabkoCtrl.text);
+                                      return paginatedList
+                                          .map(
+                                            (e) => SearchableDropdownMenuItem(
+                                              value: e['id'],
+                                              label: e['text'] ?? '',
+                                              child: Text(e['text'] ?? ''),
+                                            ),
+                                          )
+                                          .toList();
                                     },
-                                    judul: "Propinsi",
+                                    validator: (val) {
+                                      if (val == null) return 'Cant be empty';
+                                      return null;
+                                    },
+                                    onChanged: (val) {
+                                      // _prop = val.toString();
+                                      kecamatanCtrl.text = val.toString();
+                                    },
+                                  ),
+                                  SearchableDropdownFormField.paginated(
+                                    backgroundDecoration: (child) => Card(
+                                      margin: EdgeInsets.zero,
+                                      color: Colors.white,
+                                      elevation: 3,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: child,
+                                      ),
+                                    ),
+                                    hintText: const Text('Search Kelurahan'),
+                                    paginatedRequest:
+                                        (int page, String? searchKey) async {
+                                      final List paginatedList =
+                                          await getKelurahanList(
+                                              key: searchKey,
+                                              kode: kecamatanCtrl.text);
+                                      return paginatedList
+                                          .map(
+                                            (e) => SearchableDropdownMenuItem(
+                                              value: e['id'],
+                                              label: e['text'] ?? '',
+                                              child: Text(e['text'] ?? ''),
+                                            ),
+                                          )
+                                          .toList();
+                                    },
+                                    validator: (val) {
+                                      if (val == null) return 'Cant be empty';
+                                      return null;
+                                    },
+                                    onChanged: (val) {
+                                      // _prop = val.toString();
+                                      kelurahanCtrl.text = val.toString();
+                                    },
                                   ),
                                   TextFormFieldWidget(
                                     attributeCtrl: alamatCtrl,
@@ -338,6 +448,62 @@ class _EsuketSkboroFormScreenState extends State<EsuketSkboroFormScreen> {
                                           attributeCtrl: tglSelesaiCtrl),
                                     ],
                                   ),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Data Pengikut',
+                                        style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  TextFormFieldWidget(
+                                    attributeCtrl: nikPengikutCtrl,
+                                    labelText: 'NIK',
+                                    iconData: Icons.badge,
+                                    isRequired: false,
+                                  ),
+                                  TextFormFieldWidget(
+                                    attributeCtrl: namaPengikutCtrl,
+                                    labelText: 'Nama',
+                                    iconData: Icons.more_horiz,
+                                    isRequired: false,
+                                  ),
+                                  DropdownWidget(
+                                    dropDownItems: genderItems,
+                                    inputController: genderPengikutCtrl,
+                                    onChanged: (value) {
+                                      genderPengikutCtrl.text = value;
+                                    },
+                                    judul: "Jenis Kelamin",
+                                  ),
+                                  TextFormFieldWidget(
+                                    attributeCtrl: umurPengikutCtrl,
+                                    labelText: 'Umur',
+                                    iconData: Icons.more_horiz,
+                                    isRequired: false,
+                                  ),
+                                  DropdownWidget(
+                                    dropDownItems: perkawinanItems,
+                                    inputController: perkawinanPengikutCtrl,
+                                    onChanged: (value) {
+                                      perkawinanPengikutCtrl.text = value;
+                                    },
+                                    judul: "Status Perkawinan",
+                                  ),
+                                  DropdownWidget(
+                                    dropDownItems: hubunganItems,
+                                    inputController: hubunganPengikutCtrl,
+                                    onChanged: (value) {
+                                      hubunganPengikutCtrl.text = value;
+                                    },
+                                    judul: "Hubungan Keluarga",
+                                  ),
                                   SizedBox(
                                     width: double.infinity,
                                     child: TextButton.icon(
@@ -360,16 +526,32 @@ class _EsuketSkboroFormScreenState extends State<EsuketSkboroFormScreen> {
                                       ),
                                       onPressed: () {
                                         setState(() {
-                                          _pengikut.add(Text('TAMBAh BARU'));
+                                          _pengikutNIK
+                                              .add(nikPengikutCtrl.text);
+                                          _pengikutNama
+                                              .add(namaPengikutCtrl.text);
+                                          _pengikutGender
+                                              .add(genderPengikutCtrl.text);
+                                          _pengikutUmur
+                                              .add(umurPengikutCtrl.text);
+                                          _pengikutPerkawinan
+                                              .add(perkawinanPengikutCtrl.text);
+                                          _pengikutHubungan
+                                              .add(hubunganPengikutCtrl.text);
+                                          nikPengikutCtrl.clear();
+                                          namaPengikutCtrl.clear();
+                                          genderPengikutCtrl.clear();
+                                          umurPengikutCtrl.clear();
+                                          perkawinanPengikutCtrl.clear();
+                                          hubunganPengikutCtrl.clear();
                                         });
                                       },
                                     ),
                                   ),
                                   SizedBox(
                                     child: ListView.builder(
-                                      itemCount: _pengikut.length,
-                                      itemBuilder: (context, index) =>
-                                          _pengikut[index],
+                                      itemCount: _pengikutNIK.length,
+                                      itemBuilder: _itemPengikutBuilder,
                                       shrinkWrap: true,
                                     ),
                                   ),
@@ -432,15 +614,15 @@ class _EsuketSkboroFormScreenState extends State<EsuketSkboroFormScreen> {
                             const WidgetStatePropertyAll(Colors.white),
                       ),
                       onPressed: () {
-                        print(propinsiCtrl.text);
-                        // if (pengantarCtrl.text.isEmpty) {
-                        //   print('upload file dulu woy!!!');
-                        // }
-                        // if (_formKey.currentState!.validate() &&
-                        //     fileUpload != null) {
-                        //   print('you tapped the submit button');
-                        //   handleSubmit();
-                        // }
+                        // print(_pengikutNIK);
+                        if (pengantarCtrl.text.isEmpty) {
+                          print('upload file dulu woy!!!');
+                        }
+                        if (_formKey.currentState!.validate() &&
+                            fileUpload != null) {
+                          print('you tapped the submit button');
+                          handleSubmit();
+                        }
                       },
                       label: const Icon(Icons.check),
                       icon: Text(
@@ -482,5 +664,111 @@ class _EsuketSkboroFormScreenState extends State<EsuketSkboroFormScreen> {
     } catch (exception) {
       throw Exception(exception);
     }
+  }
+
+  Future getKecamatanList({String? key, String? kode}) async {
+    try {
+      String url =
+          "${dotenv.env['ESUKET_BASE_URL']}/api/kecamatan?kode_kabkota=$kode&term=$key&_type=query&q=$key";
+      print(url);
+      if (key != null && key.isNotEmpty) url += "&q=$key";
+      var response = await dio.get(url);
+      if (response.statusCode != 200) throw Exception(response.statusMessage);
+      return response.data;
+    } catch (exception) {
+      throw Exception(exception);
+    }
+  }
+
+  Future getKelurahanList({String? key, String? kode}) async {
+    try {
+      String url =
+          "${dotenv.env['ESUKET_BASE_URL']}/api/kelurahan?kode_kecamatan=$kode&term=$key&_type=query&q=$key";
+      if (key != null && key.isNotEmpty) url += "&q=$key";
+      var response = await dio.get(url);
+      if (response.statusCode != 200) throw Exception(response.statusMessage);
+      return response.data;
+    } catch (exception) {
+      throw Exception(exception);
+    }
+  }
+
+  Widget _itemPengikutBuilder(BuildContext context, int index) {
+    return Card(
+      child: Wrap(
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: ContentWidget(
+                  value: _pengikutNIK[index],
+                  label: 'NIK:',
+                ),
+              ),
+              Expanded(
+                child: ContentWidget(
+                  value: _pengikutNama[index],
+                  label: 'Nama:',
+                ),
+              ),
+            ],
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: ContentWidget(
+                  value: genderList[int.parse(_pengikutGender[index]) - 1],
+                  label: 'Jenis Kelamin:',
+                ),
+              ),
+              Expanded(
+                child: ContentWidget(
+                  value: _pengikutUmur[index],
+                  label: 'Umur:',
+                ),
+              ),
+            ],
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: ContentWidget(
+                  value:
+                      perkawinanList[int.parse(_pengikutPerkawinan[index]) - 1],
+                  label: 'Status:',
+                ),
+              ),
+              Expanded(
+                child: ContentWidget(
+                  value: _pengikutHubungan[index],
+                  label: 'Hubungan:',
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ContentWidget extends StatelessWidget {
+  final dynamic value;
+  final String label;
+  const ContentWidget({
+    super.key,
+    required this.value,
+    required this.label,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(label),
+      subtitle: Text(value),
+    );
   }
 }

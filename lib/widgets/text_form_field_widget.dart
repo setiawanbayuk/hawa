@@ -76,6 +76,9 @@ class TextFormFieldWidget extends StatelessWidget {
         ),
       ),
       validator: (value) {
+        if (isRequired == false) {
+          return null;
+        }
         if (value == null || value.isEmpty) {
           return '$labelText field is required';
         }
